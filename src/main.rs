@@ -8,14 +8,24 @@
 
 use core::panic::PanicInfo;
 
+static HELLO: &[u8] = b"Hello World!";
 
 #[unsafe(no_mangle)] // do not mangle the name of this function
 pub extern "C" fn _start() -> ! {
     /*
-    This is our custom entry point.
-    The linker looks for a function called `_start` by default
-    This is why we added the no_mangle attribute
+    * This is our custom entry point.
+    * The linker looks for a function called `_start` by default
+    * This is why we added the no_mangle attribute
     */
+    // basic loop to display text on the screen
+    let vga_buffer = 0xb8000 as *mut u8;
+    for (i, &byte) in HELLO.iter().enumerate() {
+        unsafe {
+            *vga_buffer.offset(i as isize * 2) = byte;
+            *vga_buffer.offset(i as isize * 2 + 1) = 0xb;
+        }
+    }
+
     loop {}
 }
 

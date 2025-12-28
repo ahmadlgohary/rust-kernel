@@ -8,13 +8,7 @@ name = "rust-kernel"
 test = false
 bench = false
 
-# the profile used for `cargo build`
-[profile.dev]
-panic = "abort" # disable stack unwinding on panic
-
-# the profile used for `cargo build --release`
-[profile.release]
-panic = "abort" # disable stack unwinding on panic
-
 [dependencies]
-
+# we need a bootloader to convert our binary to a bootable disk image
+# we use the bootloader crate instead of making our own bootloader
+bootloader = "0.9.8"

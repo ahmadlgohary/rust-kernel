@@ -1,0 +1,3 @@
+[toolchain]
+# since we are using unstable.build-std, the compiler need rust nightly
+channel = "nightly" 
