@@ -6,9 +6,11 @@
 // underlying runtime system and we will define our own entry point
 #![no_main]
 
+// Import our vga printing module
+mod vga_buffer;
+
 use core::panic::PanicInfo;
 
-static HELLO: &[u8] = b"Hello World!";
 
 #[unsafe(no_mangle)] // do not mangle the name of this function
 pub extern "C" fn _start() -> ! {
@@ -17,14 +19,17 @@ pub extern "C" fn _start() -> ! {
     * The linker looks for a function called `_start` by default
     * This is why we added the no_mangle attribute
     */
+
+    vga_buffer::print_something();
+
     // basic loop to display text on the screen
-    let vga_buffer = 0xb8000 as *mut u8;
-    for (i, &byte) in HELLO.iter().enumerate() {
-        unsafe {
-            *vga_buffer.offset(i as isize * 2) = byte;
-            *vga_buffer.offset(i as isize * 2 + 1) = 0xb;
-        }
-    }
+    // let vga_buffer = 0xb8000 as *mut u8;
+    // for (i, &byte) in HELLO.iter().enumerate() {
+    //     unsafe {
+    //         *vga_buffer.offset(i as isize * 2) = byte;
+    //         *vga_buffer.offset(i as isize * 2 + 1) = 0xb;
+    //     }
+    // }
 
     loop {}
 }
