@@ -7,7 +7,6 @@
 #![no_main]
 
 mod vga_buffer; // Import our vga printing module
-use core::fmt::Write;
 use core::panic::PanicInfo;
 
 // do not mangle the name of this function
@@ -19,16 +18,7 @@ use core::panic::PanicInfo;
  * This is why we added the no_mangle attribute
  */
  pub extern "C" fn _start() -> ! {
-    vga_buffer::WRITER.lock().write_str("Hello again").unwrap();
-   
-    write!(
-        vga_buffer::WRITER.lock(),
-        ", some numbers: {} {}",
-        42,
-        1.337
-    )
-    .unwrap();
-
+    println!("hello again{}\n","!");
     loop {}
 }
 

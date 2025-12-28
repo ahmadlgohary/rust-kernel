@@ -1,7 +1,7 @@
 use spin::Mutex;
 use volatile::Volatile;
 use lazy_static::lazy_static;
-use core::fmt::{Result, Write};
+use core::fmt::{Result, Write, Arguments};
 
 const UNKNOWN_CHAR: u8 = 0xfe; // prints ■
 const SPACE_CHAR: u8 = 0x20; // the ' ' char
@@ -71,7 +71,7 @@ impl Writer {
             b'\n' => self.new_line(),
             byte => {
                 if self.column_position >= BUFFER_WIDTH {
-                    self.new_line()
+                    self.new_line();
                 }
                 let row = BUFFER_HEIGHT - 1;
                 let col = self.column_position;
@@ -81,7 +81,7 @@ impl Writer {
                     ascii_character: byte,
                     color_code,
                 });
-                self.column_position += 1
+                self.column_position += 1;
             }
         }
     }
@@ -97,8 +97,8 @@ impl Writer {
     }
 
     fn new_line(&mut self) {
-        for row in 1..BUFFER_WIDTH {
-            for col in 0..BUFFER_HEIGHT {
+        for row in 1..BUFFER_HEIGHT {
+            for col in 0..BUFFER_WIDTH {
                 let character = self.buffer.chars[row][col].read();
                 self.buffer.chars[row - 1][col].write(character);
             }
@@ -132,4 +132,21 @@ lazy_static! {
         color_code: ColorCode::new(Color::Yellow, Color::Black),
         buffer: unsafe { &mut *(VGA_MEMORY_ADDRESS as *mut Buffer) },
     });
+}
+
+#[macro_export]
+macro_rules! print {
+    ($($arg:tt)*) => ($crate::vga_buffer::_print(format_args!($($arg)*)));
+
+}
+
+#[macro_export]
+macro_rules! println{
+    () => ($crate::print!("\n"));    
+    ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)));
+}
+
+#[doc(hidden)]
+pub fn _print(args: Arguments){
+    WRITER.lock().write_fmt(args).unwrap();
 }
