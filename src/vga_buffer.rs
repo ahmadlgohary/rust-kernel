@@ -11,7 +11,6 @@ const VGA_MEMORY_ADDRESS: u32 = 0xb8000;
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
-
 pub enum Color {
     Black = 0,
     Blue = 1,
@@ -33,7 +32,6 @@ pub enum Color {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(transparent)]
-
 struct ColorCode(u8);
 
 impl ColorCode {
@@ -44,7 +42,6 @@ impl ColorCode {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
-
 struct ScreenChar {
     ascii_character: u8,
     color_code: ColorCode,
@@ -54,7 +51,6 @@ const BUFFER_HEIGHT: usize = 25;
 const BUFFER_WIDTH: usize = 80;
 
 #[repr(transparent)]
-
 struct Buffer {
     chars: [[Volatile<ScreenChar>; BUFFER_WIDTH]; BUFFER_HEIGHT],
 }

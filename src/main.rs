@@ -24,6 +24,7 @@ pub extern "C" fn _start() -> ! {
     println!("hello again{}\n", "!");
     #[cfg(test)]
     test_main();
+    #[allow(clippy::empty_loop)]
     loop {}
 }
 
@@ -44,19 +45,17 @@ fn panic(info: &PanicInfo) -> ! {
 }
 
 #[cfg(test)]
-fn test_runner(tests: &[&dyn Fn()]) {
+fn test_runner(tests: &[&dyn Testable]) {
     serial_println!("Running {} tests", tests.len());
     for test in tests {
-        test();
+        test.run();
     }
     exit_qemu(QemuExitCode::Success);
 }
 
 #[test_case]
 fn trivial_assertion(){
-    serial_print!("trivial assertion... ");
-    assert_eq!(1, 1);
-    serial_println!("[ok]");
+    assert_eq!(1, 2);
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -71,5 +70,20 @@ pub fn exit_qemu(exit_code: QemuExitCode) {
     unsafe {
         let mut port= Port::new(0xf4);
         port.write(exit_code as u32);
+    }
+}
+
+pub trait Testable {
+    fn run(&self) -> ();
+}
+
+impl<T> Testable for T
+where 
+T:Fn()
+{
+    fn run(&self) {
+        serial_print!("{}...\t", core::any::type_name::<T>());
+        self();
+        serial_println!("[ok]");
     }
 }
