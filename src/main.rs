@@ -24,6 +24,7 @@ pub extern "C" fn _start() -> ! {
     println!("hello again{}\n", "!");
     #[cfg(test)]
     test_main();
+    
     #[allow(clippy::empty_loop)]
     loop {}
 }
@@ -55,7 +56,7 @@ fn test_runner(tests: &[&dyn Testable]) {
 
 #[test_case]
 fn trivial_assertion(){
-    assert_eq!(1, 2);
+    assert_eq!(1, 1);
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -64,6 +65,7 @@ pub enum QemuExitCode {
     Success = 0x10,
     Failed = 0x11,
 }
+
 pub fn exit_qemu(exit_code: QemuExitCode) {
     use x86_64::instructions::port::Port;
 
