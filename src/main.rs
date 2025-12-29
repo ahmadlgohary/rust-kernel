@@ -19,11 +19,13 @@ use core::panic::PanicInfo;
  */
  pub extern "C" fn _start() -> ! {
     println!("hello again{}\n","!");
+    panic!("Some Panic Message");
     loop {}
 }
 
 // our own custom panic handler
 #[panic_handler] 
-fn panic(_info: &PanicInfo) -> ! {
+fn panic(info: &PanicInfo) -> ! {
+    println!("{info}");
     loop {}
 }
