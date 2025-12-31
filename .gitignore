@@ -2,3 +2,4 @@
 my-notes.md
 Cargo.lock
 /.vscode
+tests/test-skeleton.txt

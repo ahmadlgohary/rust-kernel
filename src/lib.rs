@@ -9,6 +9,13 @@ use core::panic::PanicInfo;
 pub mod serial;
 pub mod vga_buffer;
 pub mod interrupts;
+pub mod gdt;
+
+pub fn init(){
+    interrupts::init_idt();
+    gdt::init();
+}
+
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
@@ -66,12 +73,10 @@ fn panic(info: &PanicInfo) -> ! {
 #[cfg(test)]
 #[unsafe(no_mangle)]
 pub extern "C" fn _start() -> ! {
+    init();
     test_main();
 
     #[allow(clippy::empty_loop)]
     loop {}
 }
 
-pub fn init(){
-    interrupts::init_idt();
-}
