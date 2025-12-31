@@ -20,9 +20,16 @@ use core::panic::PanicInfo;
 #[unsafe(no_mangle)] // do not mangle the name of this function
 pub extern "C" fn _start() -> ! {
     println!("hello again{}\n", "!");
+    
+    rust_kernel::init();
+
+    x86_64::instructions::interrupts::int3();
+
     #[cfg(test)]
     test_main();
     
+    println!("It did not Crash");
+
     #[allow(clippy::empty_loop)]
     loop {}
 }

@@ -1,4 +1,5 @@
 #![no_std]
+#![feature(abi_x86_interrupt)]
 #![cfg_attr(test, no_main)]
 #![feature(custom_test_frameworks)]
 #![test_runner(crate::test_runner)]
@@ -7,6 +8,7 @@
 use core::panic::PanicInfo;
 pub mod serial;
 pub mod vga_buffer;
+pub mod interrupts;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
@@ -68,4 +70,8 @@ pub extern "C" fn _start() -> ! {
 
     #[allow(clippy::empty_loop)]
     loop {}
+}
+
+pub fn init(){
+    interrupts::init_idt();
 }
