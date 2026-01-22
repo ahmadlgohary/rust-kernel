@@ -11,7 +11,6 @@
 use rust_kernel::println;
 use core::panic::PanicInfo;
 
-
 /*
 * This is our custom entry point.
 * The linker looks for a function called `_start` by default
@@ -30,7 +29,10 @@ pub extern "C" fn _start() -> ! {
     println!("It did not Crash");
 
     #[allow(clippy::empty_loop)]
-    loop {}
+    loop {
+        use rust_kernel::print;
+        print!("_");
+    }
 }
 
 #[cfg(not(test))]   // our panic handler in normal builds
