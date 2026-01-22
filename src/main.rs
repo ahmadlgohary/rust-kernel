@@ -28,18 +28,14 @@ pub extern "C" fn _start() -> ! {
     
     println!("It did not Crash");
 
-    #[allow(clippy::empty_loop)]
-    loop {
-        use rust_kernel::print;
-        print!("_");
-    }
+    rust_kernel::hlt_loop();
 }
 
 #[cfg(not(test))]   // our panic handler in normal builds
 #[panic_handler]    // our own custom panic handler
 fn panic(info: &PanicInfo) -> ! {
     println!("{info}");
-    loop {}
+    rust_kernel::hlt_loop();
 }
 
 #[cfg(test)]
