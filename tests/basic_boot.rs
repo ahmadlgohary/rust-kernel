@@ -5,7 +5,7 @@
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
-use rust_kernel::println;
+use rust_kernel::{println, hlt_loop};
 
 /*
 * This is our custom entry point.
@@ -17,14 +17,13 @@ pub extern "C" fn _start() -> ! {
     test_main();
 
     #[allow(clippy::empty_loop)]
-    loop {}
+    hlt_loop();
 }
 
 
 #[panic_handler] // our own custom panic handler
 fn panic(info: &PanicInfo) -> ! {
     rust_kernel::test_panic_handler(info);
-    loop {}
 }
 
 #[test_case]

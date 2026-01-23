@@ -3,7 +3,7 @@
 #![feature(abi_x86_interrupt)]
 
 use core::panic::PanicInfo;
-use rust_kernel::{serial_print,exit_qemu, QemuExitCode};
+use rust_kernel::{serial_print,exit_qemu, QemuExitCode, hlt_loop};
 use lazy_static::lazy_static;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 
@@ -41,7 +41,7 @@ extern "x86-interrupt" fn test_double_fault_handler(
     _error_code: u64) -> ! {
     serial_print!("[ok]\n");
     exit_qemu(QemuExitCode::Success);
-    loop {}
+    hlt_loop();
 }
 
 
