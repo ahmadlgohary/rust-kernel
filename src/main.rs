@@ -10,21 +10,27 @@
 
 use rust_kernel::println;
 use core::panic::PanicInfo;
+use bootloader::{BootInfo, entry_point};
+use x86_64::VirtAddr;
+
 
 /*
 * This is our custom entry point.
 * The linker looks for a function called `_start` by default
 * This is why we added the no_mangle attribute
 */
-#[unsafe(no_mangle)] // do not mangle the name of this function
-pub extern "C" fn _start() -> ! {
+entry_point!(kernel_main);
+fn kernel_main(boot_info: &'static BootInfo) -> ! {
     println!("hello again{}\n", "!");
     
     rust_kernel::init();
 
-    use x86_64::registers::control::Cr3;
-    let (level_4_page_table, _) = Cr3::read();
-    println!("Level 4 page table at: {:?}", level_4_page_table.start_address());
+    let physical_memory_offset = VirtAddr::new(boot_info.physical_memory_offset);
+    let mut _mapper = unsafe {rust_kernel::memory::init(physical_memory_offset)};
+    let mut _frame_allocator = unsafe {
+        rust_kernel::memory::BootInfoFrameAllocator::init(&boot_info.memory_map)
+    };
+
 
 
     #[cfg(test)]
