@@ -1,6 +1,5 @@
 use alloc::alloc::{GlobalAlloc, Layout};
 use core::ptr::null_mut;
-use linked_list_allocator::LockedHeap;
 use x86_64::{
     VirtAddr,
     structures::paging::{
@@ -8,8 +7,14 @@ use x86_64::{
     }
 };
 
+pub mod bump;
+use bump::BumpAllocator;
 #[global_allocator]
-static ALLOCATOR: LockedHeap= LockedHeap::empty();
+static ALLOCATOR: Locked<BumpAllocator> =  Locked::new(BumpAllocator::new());
+
+// use linked_list_allocator::LockedHeap;
+// #[global_allocator]
+// static ALLOCATOR: LockedHeap= LockedHeap::empty();
 
 pub struct Dummy;
 
@@ -52,3 +57,30 @@ unsafe impl GlobalAlloc for Dummy {
 }
 
 
+// wrapper around spin::Mutex to permit trait implementations
+pub struct Locked<A> {
+    inner: spin::Mutex<A>,
+}
+
+impl<A> Locked<A> {
+    pub const fn new(inner: A) -> Self{
+        Locked{
+            inner: spin::Mutex::new(inner),
+        }
+    }
+    pub fn lock(&self) -> spin::MutexGuard<A>{
+        self.inner.lock()
+
+    }
+}
+
+fn align_up(addr: usize, align: usize) -> usize {
+    /*
+     * align is a power of 2 so its binary representation has 1 bit set eg (dec(8) -> bin(0000 1000))
+     * align - 1 would set all the lower bit set to one eg (8-1 = dec(7) -> bin(0000 0111))
+     * using NOT(align - 1) would set all the upper bits of the original align to 1s eg (not(7) -> bin(1111 1000))
+     * performing an AND clears all the lower bits of (addr + align - 1)
+     * we want to align upwards we increase the address by align-1, this ensures it 'rounds up' to the next align nth address    
+    */
+    (addr + align - 1) & !(align-1)
+}
