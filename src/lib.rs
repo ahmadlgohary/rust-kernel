@@ -8,6 +8,8 @@
 
 use core::panic::PanicInfo;
 
+use bootloader::{BootInfo, entry_point};
+
 pub mod serial;
 pub mod vga_buffer;
 pub mod interrupts;

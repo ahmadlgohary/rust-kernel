@@ -17,11 +17,6 @@ extern crate alloc;
 use alloc::{boxed::Box, vec, vec::Vec, rc::Rc};
 
 
-/*
-* This is our custom entry point.
-* The linker looks for a function called `_start` by default
-* This is why we added the no_mangle attribute
-*/
 entry_point!(kernel_main);
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
     println!("hello again{}\n", "!");
