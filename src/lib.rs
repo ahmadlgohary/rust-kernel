@@ -4,6 +4,7 @@
 #![feature(custom_test_frameworks)]
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
+#![feature(alloc_error_handler)]
 
 use core::panic::PanicInfo;
 
@@ -12,6 +13,9 @@ pub mod vga_buffer;
 pub mod interrupts;
 pub mod gdt;
 pub mod memory;
+pub mod allocator;
+
+extern crate alloc;
 
 pub fn init(){
     interrupts::init_idt();
@@ -89,3 +93,7 @@ fn test_kernel_main(_boot_info: &'static BootInfo) -> ! {
     hlt_loop();
 }
 
+#[alloc_error_handler]
+fn alloc_error_handler(layout: alloc::alloc::Layout) -> ! {
+    panic!("allocation error : {layout:?}")
+}
