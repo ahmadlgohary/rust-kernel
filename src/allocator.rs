@@ -7,25 +7,29 @@ use x86_64::{
     }
 };
 
-/// Linked List Allocator using the linked list allocator crate
+// // Linked List Allocator using the linked list allocator crate
 // use linked_list_allocator::LockedHeap;
 // #[global_allocator]
 // static ALLOCATOR: LockedHeap= LockedHeap::empty();
 
 
-/// Bump (Stack) Allocator using the custom bump allocator implementation
+// // Bump (Stack) Allocator using the custom bump allocator implementation
 // pub mod bump;
 // use bump::BumpAllocator;
 // #[global_allocator]
 // static ALLOCATOR: Locked<BumpAllocator> =  Locked::new(BumpAllocator::new());
 
-/// Linked List Allocator using the custom linked list allocator implementation
-pub mod linked_list;
-use linked_list::LinkedListAllocator;
-#[global_allocator]
-static ALLOCATOR: Locked<LinkedListAllocator> =  Locked::new(LinkedListAllocator::new());
+// // Linked List Allocator using the custom linked list allocator implementation
+// pub mod linked_list;
+// use linked_list::LinkedListAllocator;
+// #[global_allocator]
+// static ALLOCATOR: Locked<LinkedListAllocator> =  Locked::new(LinkedListAllocator::new());
 
-pub struct Dummy;
+// // Fixed Block Size Allocator using the custom fixed block size allocator implementation
+pub mod fixed_size_block;
+use fixed_size_block::FixedSizeBlockAllocator;
+#[global_allocator]
+static ALLOCATOR: Locked<FixedSizeBlockAllocator> =  Locked::new(FixedSizeBlockAllocator::new());
 
 pub const HEAP_START: usize = 0x_6767_6767_0000;
 pub const HEAP_SIZE: usize = 100 * 1024; // 100 K bits
@@ -56,14 +60,6 @@ pub fn init_heap(
 }
 
 
-unsafe impl GlobalAlloc for Dummy {
-    unsafe fn alloc(&self, _layout: Layout) -> *mut u8 {
-        null_mut()
-    }
-    unsafe fn dealloc(&self, _ptr: *mut u8, _layout: Layout){
-        panic!("dealloc should never be called")
-    }
-}
 
 
 // wrapper around spin::Mutex to permit trait implementations
