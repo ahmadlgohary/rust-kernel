@@ -7,14 +7,23 @@ use x86_64::{
     }
 };
 
-pub mod bump;
-use bump::BumpAllocator;
-#[global_allocator]
-static ALLOCATOR: Locked<BumpAllocator> =  Locked::new(BumpAllocator::new());
-
+/// Linked List Allocator using the linked list allocator crate
 // use linked_list_allocator::LockedHeap;
 // #[global_allocator]
 // static ALLOCATOR: LockedHeap= LockedHeap::empty();
+
+
+/// Bump (Stack) Allocator using the custom bump allocator implementation
+// pub mod bump;
+// use bump::BumpAllocator;
+// #[global_allocator]
+// static ALLOCATOR: Locked<BumpAllocator> =  Locked::new(BumpAllocator::new());
+
+/// Linked List Allocator using the custom linked list allocator implementation
+pub mod linked_list;
+use linked_list::LinkedListAllocator;
+#[global_allocator]
+static ALLOCATOR: Locked<LinkedListAllocator> =  Locked::new(LinkedListAllocator::new());
 
 pub struct Dummy;
 
