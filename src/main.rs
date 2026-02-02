@@ -38,9 +38,51 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
         rust_kernel::memory::BootInfoFrameAllocator::init(&boot_info.memory_map)
     };
 
+    // ------------------------------------------------------------------
+    // Paging Examples 
+    // ------------------------------------------------------------------
+
+    println!("Paging Demo:");
+    let addresses = [
+        0xb8000,
+        0x0100_0020_1a10,
+        boot_info.physical_memory_offset,
+    ];
+
+    for &address in &addresses {
+        let virt = VirtAddr::new(address);
+        let phys = mapper.translate_addr(virt);
+        println!("{virt:?} -> {phys:?}");
+    }
+    
+    // ------------------------------------------------------------------
+    // initializing Heap 
+    // ------------------------------------------------------------------
     
     rust_kernel::allocator::init_heap(&mut mapper, &mut frame_allocator)
     .expect("heap initialization failed");
+
+    // ------------------------------------------------------------------
+    // Heap Examples 
+    // ------------------------------------------------------------------
+
+    println!("\nHeap Demo:");
+    let heap_value = Box::new(67);
+    println!("heap_value at {heap_value:p}");
+    
+    let mut vec = Vec::new();
+    for i in 0..500{
+        vec.push(i);
+    }
+    println!("vec at {:p}", vec.as_slice());
+
+    let reference_counted = Rc::new(vec![1,2,3]);
+    let cloned_reference = reference_counted.clone();
+
+    println!("current reference count is {}", Rc::strong_count(&cloned_reference));
+    
+    core::mem::drop(reference_counted);
+    println!("reference count is {} now", Rc::strong_count(&cloned_reference));
 
     #[cfg(test)]
     test_main();
@@ -49,6 +91,10 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     
     println!("\nAsynchronous Executor is now running!");
     
+    // ------------------------------------------------------------------
+    // initializing Executor 
+    // ------------------------------------------------------------------
+
     let mut executor = Executor::new();
     executor.spawn(Task::new(example_task()));
     executor.spawn(Task::new(keyboard::print_keypresses()));
@@ -69,9 +115,8 @@ fn panic(info: &PanicInfo) -> ! {
     rust_kernel::test_panic_handler(info)
 }
 
-async fn async_number() -> u32 {
-    42
-}
+// async example function
+async fn async_number() -> u32 {42}
 
 async fn example_task() {
     let number = async_number().await;
