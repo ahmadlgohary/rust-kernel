@@ -1,5 +1,5 @@
 use core::{mem, ptr};
-use super::{align_up, Locked};
+use super::{_align_up, Locked};
 use alloc::alloc::{GlobalAlloc, Layout};
 
 
@@ -39,7 +39,7 @@ impl LinkedListAllocator {
 
     unsafe fn add_free_region(&mut self, addr: usize, size: usize){
         // ensure that the freed region is large enough to hold a ListNode 
-        assert_eq!(align_up(addr, mem::align_of::<ListNode>()), addr);
+        assert_eq!(_align_up(addr, mem::align_of::<ListNode>()), addr);
         assert!(size >= mem::size_of::<ListNode>());
 
         let mut node = ListNode::new(size);
@@ -68,7 +68,7 @@ impl LinkedListAllocator {
 
     fn alloc_from_region(region: &ListNode, size: usize, align: usize)
         -> Result<usize, ()> {
-            let alloc_start = align_up(region.start_addr(), align);
+            let alloc_start = _align_up(region.start_addr(), align);
             let alloc_end = alloc_start.checked_add(size).ok_or(())?;
 
             if alloc_end > region.end_addr(){

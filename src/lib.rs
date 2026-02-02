@@ -8,7 +8,6 @@
 
 use core::panic::PanicInfo;
 
-use bootloader::{BootInfo, entry_point};
 
 pub mod serial;
 pub mod vga_buffer;
@@ -79,6 +78,10 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
     exit_qemu(QemuExitCode::Failed);
     hlt_loop();
 }
+
+
+#[cfg(test)]
+use bootloader::{BootInfo, entry_point};
 
 #[cfg(test)]
 #[panic_handler]

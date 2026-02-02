@@ -77,7 +77,7 @@ impl<A> Locked<A> {
     }
 }
 
-fn align_up(addr: usize, align: usize) -> usize {
+fn _align_up(addr: usize, align: usize) -> usize {
     /*
      * align is a power of 2 so its binary representation has 1 bit set eg (dec(8) -> bin(0000 1000))
      * align - 1 would set all the lower bit set to one eg (8-1 = dec(7) -> bin(0000 0111))

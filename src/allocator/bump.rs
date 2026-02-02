@@ -1,4 +1,4 @@
-use super::{align_up, Locked};
+use super::{_align_up, Locked};
 use alloc::alloc::{GlobalAlloc, Layout};
 use core::ptr;
 
@@ -31,7 +31,7 @@ unsafe impl GlobalAlloc for Locked<BumpAllocator> {
         // get a mutable reference to a mutex guard for bump
         let mut bump = self.lock();
 
-        let alloc_start = align_up(bump.next, layout.align());
+        let alloc_start = _align_up(bump.next, layout.align());
 
         let alloc_end = match alloc_start.checked_add(layout.size()){
             Some(end) => end,
