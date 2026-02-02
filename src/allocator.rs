@@ -1,5 +1,3 @@
-use alloc::alloc::{GlobalAlloc, Layout};
-use core::ptr::null_mut;
 use x86_64::{
     VirtAddr,
     structures::paging::{
@@ -8,9 +6,9 @@ use x86_64::{
 };
 
 // // Linked List Allocator using the linked list allocator crate
-// use linked_list_allocator::LockedHeap;
-// #[global_allocator]
-// static ALLOCATOR: LockedHeap= LockedHeap::empty();
+use linked_list_allocator::LockedHeap;
+#[global_allocator]
+static ALLOCATOR: LockedHeap= LockedHeap::empty();
 
 
 // // Bump (Stack) Allocator using the custom bump allocator implementation
@@ -26,12 +24,12 @@ use x86_64::{
 // static ALLOCATOR: Locked<LinkedListAllocator> =  Locked::new(LinkedListAllocator::new());
 
 // // Fixed Block Size Allocator using the custom fixed block size allocator implementation
-pub mod fixed_size_block;
-use fixed_size_block::FixedSizeBlockAllocator;
-#[global_allocator]
-static ALLOCATOR: Locked<FixedSizeBlockAllocator> =  Locked::new(FixedSizeBlockAllocator::new());
+// pub mod fixed_size_block;
+// use fixed_size_block::FixedSizeBlockAllocator;
+// #[global_allocator]
+// static ALLOCATOR: Locked<FixedSizeBlockAllocator> =  Locked::new(FixedSizeBlockAllocator::new());
 
-pub const HEAP_START: usize = 0x_6767_6767_0000;
+pub const HEAP_START: usize = 0x_4444_4444_0000;
 pub const HEAP_SIZE: usize = 100 * 1024; // 100 K bits
 
 pub fn init_heap(
@@ -73,7 +71,7 @@ impl<A> Locked<A> {
             inner: spin::Mutex::new(inner),
         }
     }
-    pub fn lock(&self) -> spin::MutexGuard<A>{
+    pub fn lock(&self) -> spin::MutexGuard<'_, A>{
         self.inner.lock()
 
     }
